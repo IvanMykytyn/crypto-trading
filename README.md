@@ -2,13 +2,15 @@
 
 A small **crypto trading** UI backed by **CoinGecko**—search coins, open a detail page with **EUR** pricing and an **intraday** chart, then place **paper** buys and sells (simulation). **My orders** ties full history to **portfolio P/L** (average cost vs live quotes). Your simulated wallet is saved in **localStorage**, so balances and orders survive a refresh.
 
+**Live demo:** [https://crypto-trading-cmd.netlify.app](https://crypto-trading-cmd.netlify.app)
+
 ---
 
 ## Running locally
 
 **Prerequisites:** Node.js (LTS), [pnpm](https://pnpm.io/installation) (version is pinned in `package.json`).
 
-If you don’t have pnpm yet: run **`corepack enable`** (comes with Node), then use the `pnpm` commands below—Corepack will install the pinned version. 
+If you don’t have pnpm yet: run **`corepack enable`** (comes with Node), then use the `pnpm` commands below—Corepack will install the pinned version.
 
 Or install globally: **`npm install -g pnpm`** (preferred).
 
@@ -30,7 +32,6 @@ pnpm dev
 
 Open the URL Vite prints (typically `http://localhost:5173`).
 
-
 | Command         | Use case                      |
 | --------------- | ----------------------------- |
 | `pnpm build`    | Typecheck + production bundle |
@@ -39,7 +40,6 @@ Open the URL Vite prints (typically `http://localhost:5173`).
 | `pnpm test:run` | Vitest once (CI / pre-push)   |
 | `pnpm lint`     | ESLint                        |
 | `pnpm format`   | Prettier                      |
-
 
 ---
 
@@ -56,7 +56,6 @@ Trades update **Redux** only (no backend): EUR balance, orders, and the **recent
 
 ## Requirements coverage
 
-
 | Area         | Approach                                                                                                                                                                                                     |
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **State**    | **Redux Toolkit** for wallet domain (orders, EUR). **TanStack Query** for remote coin data (cache, refetch, errors).                                                                                         |
@@ -64,7 +63,6 @@ Trades update **Redux** only (no backend): EUR balance, orders, and the **recent
 | **Data**     | **CoinGecko** REST (`/coins`, `/simple/price`, `/market_chart`, `/coins/markets`, search + `search/trending`) via a small axios client.                                                                      |
 | **Errors**   | Shared `getRequestErrorMessage` for Axios failures; sensible **Query** retry (skip most 4xx); user-visible messages on coin page (details, spot price, chart), trade panel, portfolio prices, navbar search. |
 | **Styling**  | **Tailwind CSS v4** (layout, utilities) plus **Mantine** for inputs, shell, modals, and buttons so forms stay consistent without rebuilding primitives.                                                      |
-
 
 ---
 

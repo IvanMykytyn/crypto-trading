@@ -130,15 +130,17 @@ export default function CoinDetails() {
             {data.symbol?.toUpperCase()}
           </h1>
           <h2 className="text-2xl font-semibold text-body">
-            <AnimatedNumber
-              key={id}
-              value={price}
-              suffix=" €"
-              formatOptions={{
-                minimumFractionDigits: 2,
-                maximumFractionDigits: price < 2 ? 6 : 2,
-              }}
-            />
+            {price ? (
+              <AnimatedNumber
+                key={id}
+                value={price}
+                suffix=" €"
+                formatOptions={{
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: price < 2 ? 6 : 2,
+                }}
+              />
+            ) : null}
           </h2>
           {priceErrorMessage && (
             <p className="mt-1 max-w-md text-center text-xs text-red-600 md:text-left">

@@ -87,7 +87,9 @@ function CoinRowLink({
         </div>
       </div>
       {trailing != null ? (
-        <div className="shrink-0 tabular-nums text-xs text-body">{trailing}</div>
+        <div className="shrink-0 tabular-nums text-xs text-body">
+          {trailing}
+        </div>
       ) : null}
     </Link>
   );
@@ -202,9 +204,7 @@ function MarketsTable({
           {rows.map((row) => {
             const pct = row.price_change_percentage_24h;
             const pctLabel =
-              pct == null
-                ? "—"
-                : `${pct > 0 ? "+" : ""}${pct.toFixed(2)}%`;
+              pct == null ? "—" : `${pct > 0 ? "+" : ""}${pct.toFixed(2)}%`;
             return (
               <tr
                 key={row.id}
