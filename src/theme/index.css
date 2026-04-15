@@ -1,0 +1,16 @@
+@import "./tokens.css";
+@import "tailwindcss";
+@import "@mantine/core/styles.layer.css";
+
+@theme {
+  --color-btn: var(--app-btn);
+  --color-ink: var(--app-ink);
+  --color-body: var(--app-body);
+  --color-logo: var(--app-logo);
+  --color-profit: var(--app-profit);
+  --color-currency: var(--app-currency);
+  --color-input: var(--app-input);
+  --color-navbar: var(--app-navbar);
+  --color-navbar-border: var(--app-navbar-border);
+  --color-search-well: var(--app-search-well);
+}

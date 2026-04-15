@@ -1,0 +1,17 @@
+/**
+ * Single source for brand colors. Tailwind @theme and Mantine both read these.
+ */
+:root {
+  --app-btn: #153243;
+  --app-ink: #000000;
+  --app-body: #202020;
+  --app-logo: #009cb7;
+  --app-profit: #00bf13;
+  --app-currency: #74cddc;
+  --app-input: #0000000a;
+  --app-navbar: #ffffff;
+  --app-navbar-border: #e8eef2;
+  --app-search-well: #f4f8fa;
+  --app-chart-line: #287979;
+  --app-chart-fade: #b2e4e5;
+}
