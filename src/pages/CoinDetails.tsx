@@ -78,7 +78,7 @@ export default function CoinDetails() {
         <br />
         <span className="font-medium text-ink">
           {holding?.toLocaleString(undefined, {
-            maximumFractionDigits: 8,
+            maximumFractionDigits: holding < 2 ? 6 : 2,
           })}{" "}
           <span className="font-semibold">{coinSymbol}</span>
           <br />
