@@ -4,6 +4,8 @@ A small **crypto trading** UI backed by **CoinGecko**—search coins, open a det
 
 **Live demo:** [https://crypto-trading-cmd.netlify.app](https://crypto-trading-cmd.netlify.app)
 
+**Features demo:** [loom video](https://www.loom.com/share/153f195d3b504f71a068028c98069f3b)
+
 ---
 
 ## Running locally
