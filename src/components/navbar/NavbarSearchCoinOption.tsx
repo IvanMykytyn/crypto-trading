@@ -30,7 +30,7 @@ export const NavbarSearchCoinOption: React.FC<NavbarSearchCoinOptionType> = ({
           />
         )}
         <div className="min-w-0">
-          <div className="truncate text-sm font-medium text-ink">
+          <div className="truncate max-w-[180px] md:max-w-full text-sm font-medium text-ink">
             {coin.name}
           </div>
           <div className="truncate text-xs text-body">{coin.symbol}</div>
