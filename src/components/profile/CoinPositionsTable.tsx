@@ -1,31 +1,26 @@
 import { clsx } from "clsx";
 
+import {
+  COINGECKO_VS_CURRENCY_EUR,
+  FIAT_CURRENCY_CODE_EUR,
+} from "../../constants/market";
 import type { CoinPosition } from "../../store/positionsFromOrders";
+import {
+  formatCoinAmount,
+  formatEurPrice,
+  formatSignedPercent,
+} from "../../utils/currency";
 
 type Props = {
   positions: Record<string, CoinPosition>;
   /** CoinGecko id → display symbol (e.g. from latest order). */
   symbolByCoinId: Record<string, string>;
-  /** CoinGecko simple/price map: id → { eur: number } */
-  priceById: Record<string, { eur?: number }> | undefined;
+  /** CoinGecko `/simple/price` map: id → { [vs_currency]: number } */
+  priceById: Record<string, Partial<Record<string, number>>> | undefined;
   isLoadingPrices: boolean;
   /** Human-readable error when the batched price request failed. */
   pricesErrorMessage?: string | null;
 };
-
-function fmtEur(n: number, digits = 2): string {
-  return `${n.toLocaleString(undefined, {
-    minimumFractionDigits: digits,
-    maximumFractionDigits: digits,
-  })} €`;
-}
-
-function fmtPct(n: number): string {
-  const sign = n > 0 ? "+" : "";
-  return `${sign}${n.toLocaleString(undefined, {
-    maximumFractionDigits: 2,
-  })}%`;
-}
 
 export function CoinPositionsTable({
   positions,
@@ -49,7 +44,7 @@ export function CoinPositionsTable({
   const computed = rows.map(([coinId, pos]) => {
     const symbol = symbolByCoinId[coinId] ?? coinId.toUpperCase();
     const costBasis = pos.quantity * pos.avgCostEurPerCoin;
-    const priceEur = priceById?.[coinId]?.eur;
+    const priceEur = priceById?.[coinId]?.[COINGECKO_VS_CURRENCY_EUR];
     const hasLive = typeof priceEur === "number" && Number.isFinite(priceEur);
     const marketValue = hasLive ? pos.quantity * priceEur : null;
     const unrealizedEur = marketValue !== null ? marketValue - costBasis : null;
@@ -129,21 +124,19 @@ export function CoinPositionsTable({
                     </span>
                   </td>
                   <td className="px-3 py-2.5 text-right tabular-nums text-ink">
-                    {pos.quantity.toLocaleString(undefined, {
-                      maximumFractionDigits: 8,
-                    })}
+                    {formatCoinAmount(pos.quantity)}
                   </td>
                   <td className="px-3 py-2.5 text-right tabular-nums text-body">
-                    {fmtEur(pos.avgCostEurPerCoin)}
+                    {formatEurPrice(pos.avgCostEurPerCoin)}
                   </td>
                   <td className="px-3 py-2.5 text-right tabular-nums text-body">
-                    {priceEur !== null ? fmtEur(priceEur) : "—"}
+                    {priceEur !== null ? formatEurPrice(priceEur) : "—"}
                   </td>
                   <td className="px-3 py-2.5 text-right tabular-nums text-ink">
-                    {marketValue !== null ? fmtEur(marketValue) : "—"}
+                    {marketValue !== null ? formatEurPrice(marketValue) : "—"}
                   </td>
                   <td className="px-3 py-2.5 text-right tabular-nums text-body">
-                    {fmtEur(costBasis)}
+                    {formatEurPrice(costBasis)}
                   </td>
                   <td
                     className={clsx(
@@ -157,7 +150,9 @@ export function CoinPositionsTable({
                             : "text-ink",
                     )}
                   >
-                    {unrealizedEur !== null ? fmtEur(unrealizedEur) : "—"}
+                    {unrealizedEur !== null
+                      ? formatEurPrice(unrealizedEur)
+                      : "—"}
                   </td>
                   <td
                     className={clsx(
@@ -171,7 +166,9 @@ export function CoinPositionsTable({
                             : "text-ink",
                     )}
                   >
-                    {unrealizedPct !== null ? fmtPct(unrealizedPct) : "—"}
+                    {unrealizedPct !== null
+                      ? formatSignedPercent(unrealizedPct)
+                      : "—"}
                   </td>
                 </tr>
               ),
@@ -183,10 +180,10 @@ export function CoinPositionsTable({
                 Subtotal (rows with a live price)
               </td>
               <td className="px-3 py-2.5 text-right tabular-nums text-ink">
-                {sumValue > 0 ? fmtEur(sumValue) : "—"}
+                {sumValue > 0 ? formatEurPrice(sumValue) : "—"}
               </td>
               <td className="px-3 py-2.5 text-right tabular-nums text-body">
-                {sumCostQuoted > 0 ? fmtEur(sumCostQuoted) : "—"}
+                {sumCostQuoted > 0 ? formatEurPrice(sumCostQuoted) : "—"}
               </td>
               <td
                 className={clsx(
@@ -198,11 +195,11 @@ export function CoinPositionsTable({
                       : "text-ink",
                 )}
               >
-                {sumCostQuoted > 0 ? fmtEur(sumPnl) : "—"}
+                {sumCostQuoted > 0 ? formatEurPrice(sumPnl) : "—"}
               </td>
               <td className="px-3 py-2.5 text-right tabular-nums text-body">
                 {sumCostQuoted > 0
-                  ? fmtPct((sumPnl / sumCostQuoted) * 100)
+                  ? formatSignedPercent((sumPnl / sumCostQuoted) * 100)
                   : "—"}
               </td>
             </tr>
@@ -210,8 +207,9 @@ export function CoinPositionsTable({
         </table>
       </div>
       <p className="text-xs text-body">
-        Unrealized P/L uses your average entry price vs the latest CoinGecko EUR
-        quote. Selling does not change the average cost of what you still hold.
+        Unrealized P/L uses your average entry price vs the latest CoinGecko{" "}
+        {FIAT_CURRENCY_CODE_EUR} quote. Selling does not change the average cost
+        of what you still hold.
       </p>
     </div>
   );

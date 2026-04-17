@@ -1,6 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import { addOrder } from "./ordersSlice";
+import { FIAT_CURRENCY_CODE_EUR } from "../constants/market";
+import { roundCoinQuantity, roundEurAmount } from "../utils/money";
+import { addOrder, OrderSide } from "./ordersSlice";
 import { buildCoinPositionsFromOrders } from "./positionsFromOrders";
 import { creditEur, debitEur } from "./profileSlice";
 import type { RootState } from "./rootReducer";
@@ -13,14 +15,6 @@ export type TradePayload = {
   coinAmount: number;
 };
 
-function roundMoney(n: number): number {
-  return Math.round(n * 100) / 100;
-}
-
-function roundCoin(n: number): number {
-  return Math.round(n * 1e8) / 1e8;
-}
-
 export const placeBuy = createAsyncThunk<
   void,
   TradePayload,
@@ -31,22 +25,24 @@ export const placeBuy = createAsyncThunk<
     const { eurAmount, coinAmount, priceEurPerCoin, coinId, coinSymbol } =
       payload;
     if (eurAmount <= 0 || coinAmount <= 0 || priceEurPerCoin <= 0) {
-      return rejectWithValue("Enter positive EUR and coin amounts.");
+      return rejectWithValue(
+        `Enter positive ${FIAT_CURRENCY_CODE_EUR} and coin amounts.`,
+      );
     }
 
     const balance = getState().profile.eurBalance;
-    const eurRounded = roundMoney(eurAmount);
+    const eurRounded = roundEurAmount(eurAmount);
     if (eurRounded > balance) {
-      return rejectWithValue("Not enough EUR balance.");
+      return rejectWithValue(`Not enough ${FIAT_CURRENCY_CODE_EUR} balance.`);
     }
 
     dispatch(
       addOrder({
         coinId,
         coinSymbol,
-        side: "buy",
+        side: OrderSide.Buy,
         eurAmount: eurRounded,
-        coinAmount: roundCoin(coinAmount),
+        coinAmount: roundCoinQuantity(coinAmount),
         priceEurPerCoin,
       }),
     );
@@ -64,13 +60,15 @@ export const placeSell = createAsyncThunk<
     const { eurAmount, coinAmount, priceEurPerCoin, coinId, coinSymbol } =
       payload;
     if (eurAmount <= 0 || coinAmount <= 0 || priceEurPerCoin <= 0) {
-      return rejectWithValue("Enter positive EUR and coin amounts.");
+      return rejectWithValue(
+        `Enter positive ${FIAT_CURRENCY_CODE_EUR} and coin amounts.`,
+      );
     }
 
     const held =
       buildCoinPositionsFromOrders(getState().orders.items)[coinId]?.quantity ??
       0;
-    const coinRounded = roundCoin(coinAmount);
+    const coinRounded = roundCoinQuantity(coinAmount);
     if (coinRounded > held) {
       return rejectWithValue("Not enough coins to sell.");
     }
@@ -79,12 +77,12 @@ export const placeSell = createAsyncThunk<
       addOrder({
         coinId,
         coinSymbol,
-        side: "sell",
-        eurAmount: roundMoney(eurAmount),
+        side: OrderSide.Sell,
+        eurAmount: roundEurAmount(eurAmount),
         coinAmount: coinRounded,
         priceEurPerCoin,
       }),
     );
-    dispatch(creditEur(roundMoney(eurAmount)));
+    dispatch(creditEur(roundEurAmount(eurAmount)));
   },
 );

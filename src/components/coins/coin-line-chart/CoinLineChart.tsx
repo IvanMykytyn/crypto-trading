@@ -9,6 +9,8 @@ import {
   YAxis,
 } from "recharts";
 
+import { COINGECKO_VS_CURRENCY_EUR } from "../../../constants/market";
+import { formatEurPrice } from "../../../utils/currency";
 import { useCoinMarketChart } from "../../../hooks/useCoinMarketChart";
 import { getRequestErrorMessage } from "../../../lib/axios-error";
 import { CustomCoinChartTooltip } from "./CustomCoinChartTooltip";
@@ -27,7 +29,7 @@ export const CoinLineChart = ({ id }: CoinLineChartProps) => {
     isError,
     error,
   } = useCoinMarketChart(id, {
-    vs_currency: "eur",
+    vs_currency: COINGECKO_VS_CURRENCY_EUR,
     days: 1,
   });
 
@@ -52,12 +54,7 @@ export const CoinLineChart = ({ id }: CoinLineChartProps) => {
     return { yMin: minP - pad, yMax: maxP + pad };
   }, [chartData]);
 
-  const formatYAxis = (value: number) => {
-    if (value < 2) {
-      return `${value.toLocaleString(undefined, { maximumFractionDigits: 4 })}€`;
-    }
-    return `${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}€`;
-  };
+  const formatYAxis = (value: number) => formatEurPrice(value);
 
   if (isError) {
     return (
@@ -136,7 +133,7 @@ export const CoinLineChart = ({ id }: CoinLineChartProps) => {
           }}
           tickLine={false}
           axisLine={false}
-          width={50}
+          width={yMin < 0.01 ? 62 : 50}
           dx={6}
         />
 

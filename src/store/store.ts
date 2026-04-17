@@ -44,7 +44,6 @@ function createAsyncLocalStorage() {
   };
 }
 
-/** New key drops legacy persisted shapes; profile is EUR-only, positions come from orders. */
 const persistConfig = {
   key: "cmd-portfolio-v2",
   storage: createAsyncLocalStorage(),

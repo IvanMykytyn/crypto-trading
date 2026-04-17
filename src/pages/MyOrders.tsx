@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 
+import { FIAT_CURRENCY_CODE_EUR } from "../constants/market";
+import { formatEurPrice } from "../utils/currency";
 import { OrderHistoryList } from "../components/orders/OrderHistoryList";
 import { CoinPositionsTable } from "../components/profile/CoinPositionsTable";
 import { Button } from "../components/shared/Button";
@@ -15,7 +17,7 @@ import {
   selectOrders,
 } from "../store/selectors";
 
-/** Orders are newest-first; keep the first symbol seen per coin (latest trade). */
+/** Orders are newest-first; keep the first symbol seen per coin. */
 function buildSymbolByCoinId(orders: Order[]): Record<string, string> {
   const map: Record<string, string> = {};
   for (const o of orders) {
@@ -62,7 +64,7 @@ export default function MyOrders() {
             dispatch(creditEur(1000));
           }}
         >
-          Deposit 1000 €
+          Deposit {formatEurPrice(1000)}
         </Button>
         <Button
           onClick={() => {
@@ -77,13 +79,9 @@ export default function MyOrders() {
       <section className="space-y-3">
         <h2 className="text-sm font-semibold text-ink">Profile</h2>
         <p className="text-sm text-body">
-          EUR balance:{" "}
+          {FIAT_CURRENCY_CODE_EUR} balance:{" "}
           <span className="font-medium text-ink">
-            {eurBalance.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}{" "}
-            €
+            {formatEurPrice(eurBalance)}
           </span>
         </p>
 

@@ -7,6 +7,7 @@ import {
   type NavbarSearchCoinOptionType,
 } from "./NavbarSearchCoinOption";
 import { useNavigate } from "react-router";
+import { ROUTE_PATH } from "../../constants/routes";
 
 export function NavbarSearch() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export function NavbarSearch() {
       onValueChange={setValue}
       data={data ?? []}
       onSuggestionPick={(value) => {
-        navigate(`/coin/${value}`);
+        navigate(ROUTE_PATH.coin(value));
       }}
       isLoading={isLoading}
       errorMessage={errorMessage}

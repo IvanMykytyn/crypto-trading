@@ -3,6 +3,8 @@ import {
   fetchCoinMarketChart,
   type FetchCoinMarketChartParams,
 } from "../api/coingecko/market-chart";
+import { queryKeys } from "../constants/query-keys";
+import { STALE_TIME_MS } from "../constants/query-timing";
 
 export function useCoinMarketChart(
   coinId: string | undefined,
@@ -13,16 +15,13 @@ export function useCoinMarketChart(
   const days = params?.days;
 
   return useQuery({
-    queryKey: [
-      "coingecko",
-      "coin",
+    queryKey: queryKeys.coingecko.marketChart(
       trimmedId,
-      "market_chart",
       vs,
       days,
       params?.interval ?? null,
       params?.precision ?? null,
-    ],
+    ),
     queryFn: () => {
       if (params == null) {
         throw new Error("useCoinMarketChart: query ran without params.");
@@ -35,6 +34,6 @@ export function useCoinMarketChart(
       vs.length > 0 &&
       params != null &&
       days !== undefined,
-    staleTime: 30000,
+    staleTime: STALE_TIME_MS.coinMarketChart,
   });
 }

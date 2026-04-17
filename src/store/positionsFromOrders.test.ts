@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { Order } from "./ordersSlice";
+import { OrderSide, type Order } from "./ordersSlice";
 import { buildCoinPositionsFromOrders } from "./positionsFromOrders";
 
 function order(partial: Partial<Order> & Pick<Order, "side">): Order {
@@ -24,14 +24,14 @@ describe("buildCoinPositionsFromOrders", () => {
   it("accumulates buys with weighted average cost", () => {
     const orders: Order[] = [
       order({
-        side: "buy",
+        side: OrderSide.Buy,
         createdAt: 1,
         eurAmount: 100,
         coinAmount: 0.1,
         priceEurPerCoin: 1000,
       }),
       order({
-        side: "buy",
+        side: OrderSide.Buy,
         createdAt: 2,
         eurAmount: 200,
         coinAmount: 0.1,
@@ -48,14 +48,14 @@ describe("buildCoinPositionsFromOrders", () => {
     const newerFirst: Order[] = [
       order({
         id: "2",
-        side: "buy",
+        side: OrderSide.Buy,
         createdAt: 200,
         eurAmount: 100,
         coinAmount: 0.1,
       }),
       order({
         id: "1",
-        side: "buy",
+        side: OrderSide.Buy,
         createdAt: 100,
         eurAmount: 100,
         coinAmount: 0.1,
@@ -70,14 +70,14 @@ describe("buildCoinPositionsFromOrders", () => {
     const orders: Order[] = [
       order({
         id: "1",
-        side: "buy",
+        side: OrderSide.Buy,
         createdAt: 1,
         eurAmount: 100,
         coinAmount: 0.5,
       }),
       order({
         id: "2",
-        side: "sell",
+        side: OrderSide.Sell,
         createdAt: 2,
         eurAmount: 110,
         coinAmount: 0.5,
@@ -90,14 +90,14 @@ describe("buildCoinPositionsFromOrders", () => {
     const orders: Order[] = [
       order({
         id: "1",
-        side: "buy",
+        side: OrderSide.Buy,
         createdAt: 1,
         eurAmount: 100,
         coinAmount: 1,
       }),
       order({
         id: "2",
-        side: "sell",
+        side: OrderSide.Sell,
         createdAt: 2,
         eurAmount: 50,
         coinAmount: 0.5,
@@ -113,7 +113,7 @@ describe("buildCoinPositionsFromOrders", () => {
       order({
         coinId: "bitcoin",
         coinSymbol: "BTC",
-        side: "buy",
+        side: OrderSide.Buy,
         createdAt: 1,
         eurAmount: 10,
         coinAmount: 0.001,
@@ -121,7 +121,7 @@ describe("buildCoinPositionsFromOrders", () => {
       order({
         coinId: "ethereum",
         coinSymbol: "ETH",
-        side: "buy",
+        side: OrderSide.Buy,
         createdAt: 2,
         eurAmount: 20,
         coinAmount: 0.01,

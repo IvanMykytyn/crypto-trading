@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { FIAT_CURRENCY_CODE_EUR } from "../../../constants/market";
+import { roundCoinQuantity, roundEurAmount } from "../../../utils/money";
 import { Button } from "../../shared/Button";
 import { NumberInput } from "../../shared/NumberInput";
 import { useAppDispatch } from "../../../store/hooks";
@@ -27,14 +29,6 @@ function isIncompleteDecimal(value: string | number): boolean {
   return typeof value === "string" && /\.$/.test(value.trim());
 }
 
-function roundEur(n: number): number {
-  return Math.round(n * 100) / 100;
-}
-
-function roundCoin(n: number): number {
-  return Math.round(n * 1e8) / 1e8;
-}
-
 export const CoinTradePanel: React.FC<Props> = ({
   coinId,
   coinSymbol,
@@ -54,9 +48,9 @@ export const CoinTradePanel: React.FC<Props> = ({
     const coin = parseAmount(coinAmount);
     const id = requestAnimationFrame(() => {
       if (eur > 0 && coin <= 0) {
-        setCoinAmount(roundCoin(eur / priceEur));
+        setCoinAmount(roundCoinQuantity(eur / priceEur));
       } else if (coin > 0 && eur <= 0) {
-        setEurAmount(roundEur(coin * priceEur));
+        setEurAmount(roundEurAmount(coin * priceEur));
       }
     });
     return () => cancelAnimationFrame(id);
@@ -79,7 +73,7 @@ export const CoinTradePanel: React.FC<Props> = ({
       setCoinAmount("");
       return;
     }
-    setCoinAmount(roundCoin(eur / priceEur));
+    setCoinAmount(roundCoinQuantity(eur / priceEur));
   }
 
   function handleCoinChange(value: string | number) {
@@ -98,7 +92,7 @@ export const CoinTradePanel: React.FC<Props> = ({
       setEurAmount("");
       return;
     }
-    setEurAmount(roundEur(coin * priceEur));
+    setEurAmount(roundEurAmount(coin * priceEur));
   }
 
   function resolveAmounts(): {
@@ -111,8 +105,8 @@ export const CoinTradePanel: React.FC<Props> = ({
     const coin = parseAmount(coinAmount);
     if (eur <= 0 || coin <= 0) return null;
     return {
-      eur: roundEur(eur),
-      coin: roundCoin(coin),
+      eur: roundEurAmount(eur),
+      coin: roundCoinQuantity(coin),
       price: priceEur,
     };
   }
@@ -121,7 +115,9 @@ export const CoinTradePanel: React.FC<Props> = ({
     setError(null);
     const resolved = resolveAmounts();
     if (!resolved) {
-      setError("Enter an amount in EUR or in coins (price must be positive).");
+      setError(
+        `Enter an amount in ${FIAT_CURRENCY_CODE_EUR} or in coins (price must be positive).`,
+      );
       return;
     }
     const result = await dispatch(
@@ -145,7 +141,9 @@ export const CoinTradePanel: React.FC<Props> = ({
     setError(null);
     const resolved = resolveAmounts();
     if (!resolved) {
-      setError("Enter an amount in EUR or in coins (price must be loaded).");
+      setError(
+        `Enter an amount in ${FIAT_CURRENCY_CODE_EUR} or in coins (price must be loaded).`,
+      );
       return;
     }
     const result = await dispatch(
@@ -179,13 +177,13 @@ export const CoinTradePanel: React.FC<Props> = ({
           value={coinAmount}
           onChange={handleCoinChange}
           placeholder="0"
-          label={coinSymbol}
+          label={coinSymbol?.slice(0, 3)?.toUpperCase() ?? ""}
         />
         <NumberInput
           value={eurAmount}
           onChange={handleEurChange}
           placeholder="0"
-          label="EUR"
+          label={FIAT_CURRENCY_CODE_EUR}
         />
       </div>
       {error && (

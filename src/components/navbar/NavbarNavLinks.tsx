@@ -1,4 +1,5 @@
 import { NavLink } from "react-router";
+import { ROUTE_PATH } from "../../constants/routes";
 import { clsxm } from "../../theme/clsxm";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
@@ -13,10 +14,10 @@ export function NavbarNavLinks() {
       aria-label="Main"
       className="flex min-w-0 flex-wrap items-center gap-1 sm:gap-2"
     >
-      <NavLink to="/dashboard" className={linkClass} end>
+      <NavLink to={ROUTE_PATH.dashboard} className={linkClass} end>
         Dashboard
       </NavLink>
-      <NavLink to="/my-orders" className={linkClass}>
+      <NavLink to={ROUTE_PATH.myOrders} className={linkClass}>
         My Orders
       </NavLink>
     </nav>

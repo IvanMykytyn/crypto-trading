@@ -1,3 +1,5 @@
+import { formatEurPrice } from "../../../utils/currency";
+
 type CustomTooltipProps = {
   active?: boolean;
   payload?: { value?: number }[];
@@ -25,11 +27,7 @@ export const CustomCoinChartTooltip = ({
     <div className="rounded-md border border-slate-200 bg-white px-3 py-2 shadow-sm">
       <div className="text-xs text-slate-500">{when} UTC</div>
       <div className="text-lg font-semibold text-slate-900">
-        $
-        {priceValue.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: priceValue < 2 ? 6 : 3,
-        })}
+        {formatEurPrice(priceValue)}
       </div>
     </div>
   );

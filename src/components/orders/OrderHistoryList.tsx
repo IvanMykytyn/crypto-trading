@@ -1,20 +1,10 @@
-import type { Order } from "../../store/ordersSlice";
+import { OrderSide, type Order } from "../../store/ordersSlice";
+import { formatCoinAmount, formatEurPrice } from "../../utils/currency";
 
 type Props = {
   orders: Order[];
   emptyMessage?: string;
 };
-
-function formatEur(n: number): string {
-  return `${n.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} €`;
-}
-
-function formatCoin(n: number): string {
-  return n.toLocaleString(undefined, { maximumFractionDigits: n < 2 ? 6 : 3 });
-}
 
 export function OrderHistoryList({ orders, emptyMessage }: Props) {
   if (orders.length === 0) {
@@ -30,9 +20,12 @@ export function OrderHistoryList({ orders, emptyMessage }: Props) {
           key={o.id}
           className="flex flex-wrap items-center justify-between gap-2 px-3 py-0.5"
         >
-          <p className="text-xs">{o.side === "buy" ? "Buy" : "Sell"} </p>
+          <p className="text-xs">
+            {o.side === OrderSide.Buy ? "Buy" : "Sell"}{" "}
+          </p>
           <p className="text-xs font-semibold">
-            {formatCoin(o.coinAmount)} {o.coinSymbol} / {formatEur(o.eurAmount)}
+            {formatCoinAmount(o.coinAmount)} {o.coinSymbol} /{" "}
+            {formatEurPrice(o.eurAmount)}
           </p>
           <p className="text-xs">
             {new Date(o.createdAt).toLocaleTimeString()}

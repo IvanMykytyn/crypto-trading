@@ -1,5 +1,7 @@
 import { Avatar, Menu } from "@mantine/core";
 
+import { FIAT_CURRENCY_CODE_EUR } from "../../constants/market";
+import { formatEurPrice } from "../../utils/currency";
 import { useAppSelector } from "../../store/hooks";
 import { selectEurBalance } from "../../store/selectors";
 
@@ -29,13 +31,9 @@ export function AccountMenu() {
       <Menu.Dropdown>
         <Menu.Label>Wallet</Menu.Label>
         <Menu.Item closeMenuOnClick={false} disabled>
-          <span className="text-xs text-body">EUR</span>
+          <span className="text-xs text-body">{FIAT_CURRENCY_CODE_EUR}</span>
           <span className="ml-2 font-medium text-ink">
-            {eurBalance.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}{" "}
-            €
+            {formatEurPrice(eurBalance)}
           </span>
         </Menu.Item>
         <Menu.Divider />

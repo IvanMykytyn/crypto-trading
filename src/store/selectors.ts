@@ -19,7 +19,7 @@ export const selectEurBalance = (state: RootState) =>
 export const selectRecentlyViewed = (state: RootState) =>
   state.recent?.recentlyViewed ?? [];
 
-/** Open positions derived from order history (CoinGecko id → position). */
+/** Open positions derived from order history (CoinGecko id -> position). */
 export const selectCoinPositions = createSelector([selectOrders], (orders) =>
   buildCoinPositionsFromOrders(orders),
 );

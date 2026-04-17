@@ -1,14 +1,14 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import type { Order } from "../../store/ordersSlice";
+import { OrderSide, type Order } from "../../store/ordersSlice";
 import { OrderHistoryList } from "./OrderHistoryList";
 
 const sampleOrder: Order = {
   id: "ord-1",
   coinId: "bitcoin",
   coinSymbol: "BTC",
-  side: "buy",
+  side: OrderSide.Buy,
   eurAmount: 50.12,
   coinAmount: 0.0015,
   priceEurPerCoin: 33_413.33,
@@ -35,7 +35,9 @@ describe("OrderHistoryList", () => {
 
   it("renders sell side label", () => {
     render(
-      <OrderHistoryList orders={[{ ...sampleOrder, id: "2", side: "sell" }]} />,
+      <OrderHistoryList
+        orders={[{ ...sampleOrder, id: "2", side: OrderSide.Sell }]}
+      />,
     );
     expect(screen.getByText(/Sell/)).toBeInTheDocument();
   });

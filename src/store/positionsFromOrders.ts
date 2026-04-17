@@ -1,21 +1,14 @@
-import type { Order } from "./ordersSlice";
+import { roundCoinQuantity, roundEurAmount } from "../utils/money";
+import { OrderSide, type Order } from "./ordersSlice";
 
 export type CoinPosition = {
   quantity: number;
-  /** Volume-weighted average cost in EUR per coin for the open size (from order history). */
+  /** Volume-weighted average cost in EUR per coin for the open size. */
   avgCostEurPerCoin: number;
 };
 
-function roundMoney(n: number): number {
-  return Math.round(n * 100) / 100;
-}
-
-function roundCoin(n: number): number {
-  return Math.round(n * 1e8) / 1e8;
-}
-
 /**
- * Open positions + average cost from persisted orders (single source of truth).
+ * Open positions + average cost from persisted orders
  * CoinGecko ids are used elsewhere to fetch live prices.
  */
 export function buildCoinPositionsFromOrders(
@@ -27,14 +20,16 @@ export function buildCoinPositionsFromOrders(
 
   for (const o of sorted) {
     const cur = acc[o.coinId] ?? { quantity: 0, totalCostEur: 0 };
-    if (o.side === "buy") {
-      const quantity = roundCoin(cur.quantity + o.coinAmount);
-      const totalCostEur = roundMoney(cur.totalCostEur + o.eurAmount);
+    if (o.side === OrderSide.Buy) {
+      const quantity = roundCoinQuantity(cur.quantity + o.coinAmount);
+      const totalCostEur = roundEurAmount(cur.totalCostEur + o.eurAmount);
       acc[o.coinId] = { quantity, totalCostEur };
     } else {
       const avg = cur.quantity > 0 ? cur.totalCostEur / cur.quantity : 0;
-      const quantity = roundCoin(cur.quantity - o.coinAmount);
-      const totalCostEur = roundMoney(cur.totalCostEur - o.coinAmount * avg);
+      const quantity = roundCoinQuantity(cur.quantity - o.coinAmount);
+      const totalCostEur = roundEurAmount(
+        cur.totalCostEur - o.coinAmount * avg,
+      );
       if (quantity <= 0) {
         delete acc[o.coinId];
       } else {

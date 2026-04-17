@@ -2,7 +2,8 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
-import type { Order } from "../../../store/ordersSlice";
+import { FIAT_CURRENCY_CODE_EUR } from "../../../constants/market";
+import { OrderSide, type Order } from "../../../store/ordersSlice";
 import { renderWithProviders } from "../../../test/renderWithProviders";
 import { CoinTradePanel } from "./CoinTradePanel";
 
@@ -17,7 +18,7 @@ function buyOrder(partial: Partial<Order> = {}): Order {
     id: partial.id ?? "seed-1",
     coinId: partial.coinId ?? "bitcoin",
     coinSymbol: partial.coinSymbol ?? "BTC",
-    side: "buy",
+    side: OrderSide.Buy,
     eurAmount: partial.eurAmount ?? 5_000,
     coinAmount: partial.coinAmount ?? 0.1,
     priceEurPerCoin: partial.priceEurPerCoin ?? 50_000,
@@ -58,7 +59,7 @@ describe("CoinTradePanel", () => {
 
     const alert = await screen.findByRole("alert");
     expect(alert).toHaveTextContent(
-      "Enter an amount in EUR or in coins (price must be positive).",
+      `Enter an amount in ${FIAT_CURRENCY_CODE_EUR} or in coins (price must be positive).`,
     );
   });
 
@@ -89,7 +90,7 @@ describe("CoinTradePanel", () => {
     });
 
     const order = store.getState().orders.items[0]!;
-    expect(order.side).toBe("buy");
+    expect(order.side).toBe(OrderSide.Buy);
     expect(order.coinId).toBe("bitcoin");
     expect(order.eurAmount).toBe(500);
     expect(store.getState().profile.eurBalance).toBe(9500);
@@ -112,7 +113,7 @@ describe("CoinTradePanel", () => {
     await user.click(screen.getByRole("button", { name: /^buy$/i }));
 
     expect(
-      await screen.findByText("Not enough EUR balance."),
+      await screen.findByText(`Not enough ${FIAT_CURRENCY_CODE_EUR} balance.`),
     ).toBeInTheDocument();
     expect(screen.getByRole("alert")).toBeInTheDocument();
   });
@@ -142,7 +143,7 @@ describe("CoinTradePanel", () => {
     });
 
     const latest = store.getState().orders.items[0]!;
-    expect(latest.side).toBe("sell");
+    expect(latest.side).toBe(OrderSide.Sell);
     expect(latest.coinAmount).toBeCloseTo(0.05, 8);
     expect(store.getState().profile.eurBalance).toBe(7500);
   });
@@ -170,8 +171,12 @@ describe("CoinTradePanel", () => {
 
   it("labels inputs with coin symbol and EUR", () => {
     renderWithProviders(<CoinTradePanel {...defaultProps} />);
-    const labels = screen.getAllByText(/^(BTC|EUR)$/);
+    const labels = screen.getAllByText(
+      new RegExp(`^(BTC|${FIAT_CURRENCY_CODE_EUR})$`),
+    );
     expect(labels.some((el) => el.textContent === "BTC")).toBe(true);
-    expect(labels.some((el) => el.textContent === "EUR")).toBe(true);
+    expect(labels.some((el) => el.textContent === FIAT_CURRENCY_CODE_EUR)).toBe(
+      true,
+    );
   });
 });

@@ -1,6 +1,11 @@
 import { createSlice, nanoid, type PayloadAction } from "@reduxjs/toolkit";
 
-export type OrderSide = "buy" | "sell";
+export const OrderSide = {
+  Buy: "buy",
+  Sell: "sell",
+} as const;
+
+export type OrderSide = (typeof OrderSide)[keyof typeof OrderSide];
 
 export type Order = {
   id: string;
